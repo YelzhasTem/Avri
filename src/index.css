@@ -1,0 +1,768 @@
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+
+:root {
+  font-family: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  color-scheme: dark;
+
+  --color-background: #191a1d;
+  --color-sidebar: #1d1e21;
+  --color-surface: #232428;
+  --color-surface-raised: #26272b;
+  --color-surface-hover: #2a2c30;
+  --color-border: #303237;
+  --color-text-primary: #f3f3f4;
+  --color-text-secondary: #a3a4a9;
+  --color-text-tertiary: #777980;
+  --color-accent: #7c8cff;
+  --color-accent-hover: #8997ff;
+  --color-accent-foreground: #191a1d;
+  --color-accent-muted: rgba(124, 140, 255, 0.12);
+  --color-control-hover: rgba(243, 243, 244, 0.04);
+  --color-hairline: rgba(243, 243, 244, 0.045);
+  --color-highlight: rgba(243, 243, 244, 0.05);
+  --color-focus-ring: rgba(124, 140, 255, 0.42);
+  --color-focus-soft: rgba(124, 140, 255, 0.07);
+  --color-selection: rgba(124, 140, 255, 0.26);
+  --color-success: #82b795;
+  --color-success-muted: rgba(130, 183, 149, 0.12);
+  --color-danger: #db8b8b;
+  --color-danger-muted: rgba(219, 139, 139, 0.1);
+  --shadow-logo: inset 0 0 0 1px var(--color-highlight),
+    0 1px 4px rgba(0, 0, 0, 0.12);
+  --shadow-active: inset 0 1px 0 var(--color-highlight),
+    0 1px 5px rgba(0, 0, 0, 0.1);
+  --shadow-prompt: inset 0 0 0 1px var(--color-hairline),
+    0 10px 28px rgba(0, 0, 0, 0.14);
+  --shadow-prompt-focus: inset 0 0 0 1px var(--color-focus-ring),
+    0 0 0 3px var(--color-focus-soft), 0 12px 30px rgba(0, 0, 0, 0.16);
+  --shadow-accent: 0 3px 10px rgba(72, 82, 172, 0.22);
+  --shadow-accent-hover: 0 5px 14px rgba(72, 82, 172, 0.27);
+  --shadow-menu: inset 0 0 0 1px var(--color-hairline),
+    0 12px 28px rgba(0, 0, 0, 0.18);
+
+  --motion-fast: 140ms;
+  --motion-standard: 170ms;
+  --motion-enter: 200ms;
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-background: #f7f6f4;
+  --color-sidebar: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-hover: #f2f1ee;
+  --color-border: #e7e5e1;
+  --color-text-primary: #1c1d20;
+  --color-text-secondary: #6e7076;
+  --color-text-tertiary: #9a9ca2;
+  --color-accent: #7c8cff;
+  --color-accent-hover: #6f80f6;
+  --color-accent-foreground: #1c1d20;
+  --color-accent-muted: rgba(124, 140, 255, 0.11);
+  --color-control-hover: rgba(28, 29, 32, 0.04);
+  --color-hairline: rgba(28, 29, 32, 0.06);
+  --color-highlight: rgba(255, 255, 255, 0.88);
+  --color-focus-ring: rgba(102, 119, 235, 0.42);
+  --color-focus-soft: rgba(124, 140, 255, 0.08);
+  --color-selection: rgba(124, 140, 255, 0.2);
+  --color-success: #4f8a67;
+  --color-success-muted: rgba(79, 138, 103, 0.1);
+  --color-danger: #b65f5f;
+  --color-danger-muted: rgba(182, 95, 95, 0.08);
+  --shadow-logo: inset 0 0 0 1px var(--color-hairline),
+    0 1px 4px rgba(28, 29, 32, 0.055);
+  --shadow-active: inset 0 0 0 1px var(--color-hairline),
+    0 1px 5px rgba(28, 29, 32, 0.05);
+  --shadow-prompt: inset 0 0 0 1px var(--color-hairline),
+    0 10px 26px rgba(28, 29, 32, 0.065);
+  --shadow-prompt-focus: inset 0 0 0 1px var(--color-focus-ring),
+    0 0 0 3px var(--color-focus-soft), 0 12px 28px rgba(28, 29, 32, 0.075);
+  --shadow-accent: 0 3px 10px rgba(93, 106, 198, 0.18);
+  --shadow-accent-hover: 0 5px 14px rgba(93, 106, 198, 0.23);
+  --shadow-menu: inset 0 0 0 1px var(--color-hairline),
+    0 12px 28px rgba(28, 29, 32, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+  overflow: hidden;
+  background: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--motion-standard) var(--ease-standard);
+}
+
+button,
+textarea,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-background),
+    0 0 0 4px var(--color-focus-ring);
+}
+
+::selection {
+  color: var(--color-text-primary);
+  background: var(--color-selection);
+}
+
+.avri-shell {
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  animation: avri-page-enter var(--motion-enter) var(--ease-enter) both;
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    background-color var(--motion-standard) var(--ease-standard);
+}
+
+.avri-sidebar {
+  background-color: var(--color-sidebar);
+  box-shadow: inset -1px 0 0 var(--color-hairline);
+  transition:
+    width var(--motion-standard) var(--ease-enter),
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard);
+}
+
+.avri-topbar {
+  background-color: var(--color-background);
+  box-shadow: inset 0 -1px 0 var(--color-hairline);
+  transition:
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard);
+}
+
+.avri-logo {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-logo);
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard);
+}
+
+.avri-secondary {
+  color: var(--color-text-secondary);
+}
+
+.avri-control,
+.avri-nav-item,
+.avri-send,
+.avri-prompt {
+  transition-duration: var(--motion-standard);
+  transition-timing-function: var(--ease-standard);
+}
+
+.avri-control,
+.avri-nav-item {
+  color: var(--color-text-secondary);
+  transition-property: color, background-color, box-shadow, transform;
+}
+
+.avri-control:hover,
+.avri-nav-item:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-control-hover);
+}
+
+.avri-control:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.avri-nav-item[data-active="true"] {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-active);
+}
+
+.avri-nav-item[data-active="true"]:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.avri-nav-item[data-active="true"] svg {
+  color: var(--color-accent);
+}
+
+.avri-control:active,
+.avri-send:active {
+  transform: scale(0.97);
+}
+
+.avri-nav-item:active {
+  transform: scale(0.985);
+}
+
+.avri-profile {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.avri-profile:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.avri-send {
+  color: var(--color-accent-foreground);
+  background-color: var(--color-accent);
+  box-shadow: var(--shadow-accent);
+  transition-property: background-color, box-shadow, transform;
+}
+
+.avri-send:hover {
+  background-color: var(--color-accent-hover);
+  box-shadow: var(--shadow-accent-hover);
+}
+
+.avri-send:disabled,
+.avri-primary-button:disabled,
+.avri-secondary-button:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.avri-prompt {
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-prompt);
+  transition-property: background-color, box-shadow, transform;
+}
+
+.avri-prompt:focus-within {
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-prompt-focus);
+}
+
+.avri-textarea {
+  color: var(--color-text-primary);
+  caret-color: var(--color-accent);
+}
+
+.avri-textarea::placeholder {
+  color: var(--color-text-tertiary);
+  font-weight: 400;
+  letter-spacing: -0.006em;
+}
+
+.avri-theme-menu {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-menu);
+  transform-origin: top right;
+  animation: avri-menu-enter var(--motion-standard) var(--ease-enter) both;
+}
+
+.avri-theme-label {
+  color: var(--color-text-tertiary);
+}
+
+.avri-theme-option {
+  color: var(--color-text-secondary);
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    background-color var(--motion-standard) var(--ease-standard),
+    transform var(--motion-standard) var(--ease-standard);
+}
+
+.avri-theme-option:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+.avri-theme-option:active {
+  transform: scale(0.985);
+}
+
+.avri-theme-option[aria-checked="true"] {
+  color: var(--color-text-primary);
+  background-color: var(--color-accent-muted);
+}
+
+.avri-theme-check {
+  color: var(--color-accent);
+  transition: opacity var(--motion-fast) var(--ease-standard);
+}
+
+.avri-enter {
+  animation: avri-enter var(--motion-enter) var(--ease-enter) both;
+}
+
+.avri-chat-scroll,
+.avri-view-scroll,
+.avri-textarea {
+  scrollbar-color: var(--color-border) transparent;
+  scrollbar-width: thin;
+}
+
+.avri-message {
+  color: var(--color-text-primary);
+}
+
+.avri-message[data-role="user"] {
+  align-self: flex-end;
+  max-width: min(82%, 620px);
+  padding: 10px 14px;
+  background-color: var(--color-surface);
+  border-radius: 16px 16px 5px 16px;
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.avri-message[data-role="assistant"] {
+  align-self: stretch;
+  padding: 2px 1px;
+}
+
+.avri-typing {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  color: var(--color-text-tertiary);
+}
+
+.avri-typing span {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: currentColor;
+  animation: avri-typing 1.05s var(--ease-standard) infinite;
+}
+
+.avri-typing span:nth-child(2) {
+  animation-delay: 110ms;
+}
+
+.avri-typing span:nth-child(3) {
+  animation-delay: 220ms;
+}
+
+.avri-error {
+  color: var(--color-danger);
+  background-color: var(--color-danger-muted);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-danger) 16%, transparent);
+  animation: avri-enter var(--motion-enter) var(--ease-enter) both;
+}
+
+.avri-empty-panel,
+.avri-settings-panel,
+.avri-history-row,
+.avri-memory-row,
+.avri-memory-proposal {
+  background-color: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.avri-memory-proposal {
+  animation: avri-enter var(--motion-enter) var(--ease-enter) both;
+  transform-origin: left center;
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard);
+}
+
+.avri-memory-proposal[data-state="exiting"],
+.avri-memory-row[data-removing="true"] {
+  pointer-events: none;
+  animation: avri-memory-exit var(--motion-standard) var(--ease-standard) forwards;
+}
+
+.avri-memory-remembered {
+  display: flex;
+  width: fit-content;
+  min-width: 150px;
+  align-items: center;
+  gap: 9px;
+  color: var(--color-success);
+  background-color: var(--color-success-muted);
+  box-shadow: none;
+}
+
+.avri-memory-success-icon {
+  color: var(--color-success);
+  background-color: var(--color-surface-raised);
+  animation: avri-memory-check 280ms var(--ease-enter) both;
+}
+
+.avri-memory-preview {
+  background-color: var(--color-control-hover);
+}
+
+.avri-memory-preview-icon,
+.avri-memory-category-icon {
+  color: var(--color-accent);
+  background-color: var(--color-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.avri-memory-preview-fallback,
+.avri-memory-detail-copy {
+  color: var(--color-text-primary);
+  background-color: var(--color-control-hover);
+}
+
+.avri-memory-highlight {
+  color: inherit;
+  background-color: var(--color-accent-muted);
+  border-radius: 3px;
+  padding-inline: 1px;
+}
+
+.avri-memory-group-heading {
+  color: var(--color-text-tertiary);
+}
+
+.avri-memory-row {
+  transition:
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard),
+    opacity var(--motion-standard) var(--ease-standard),
+    transform var(--motion-standard) var(--ease-standard);
+}
+
+.avri-memory-row:hover,
+.avri-memory-row:focus-within {
+  background-color: var(--color-surface-hover);
+}
+
+.avri-memory-row-trigger {
+  color: var(--color-text-primary);
+}
+
+.avri-memory-chevron {
+  flex: 0 0 auto;
+  color: var(--color-text-tertiary);
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    transform var(--motion-standard) var(--ease-enter);
+}
+
+.avri-memory-chevron[data-expanded="true"] {
+  color: var(--color-text-secondary);
+  transform: rotate(180deg);
+}
+
+.avri-memory-details {
+  animation: avri-memory-details-enter var(--motion-standard) var(--ease-enter) both;
+}
+
+.avri-memory-status {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: var(--color-text-secondary);
+  background-color: var(--color-control-hover);
+  font-size: 9.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.avri-memory-status[data-status="proposed"] {
+  color: var(--color-accent);
+  background-color: var(--color-accent-muted);
+}
+
+.avri-memory-status[data-status="confirmed"] {
+  color: var(--color-success);
+  background-color: var(--color-success-muted);
+}
+
+.avri-memory-status[data-status="archived"] {
+  color: var(--color-text-tertiary);
+}
+
+.avri-memory-dismiss,
+.avri-filter-button {
+  color: var(--color-text-secondary);
+  background-color: transparent;
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    background-color var(--motion-standard) var(--ease-standard),
+    transform var(--motion-standard) var(--ease-standard),
+    opacity var(--motion-standard) var(--ease-standard);
+}
+
+.avri-memory-dismiss:hover,
+.avri-filter-button:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-control-hover);
+}
+
+.avri-filter-button[data-active="true"] {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.avri-memory-dismiss:active,
+.avri-filter-button:active {
+  transform: scale(0.98);
+}
+
+.avri-memory-dismiss:disabled,
+.avri-filter-button:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.avri-history-row {
+  transition:
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard),
+    transform var(--motion-standard) var(--ease-standard);
+}
+
+.avri-history-row:hover,
+.avri-history-row:focus-within {
+  background-color: var(--color-surface-hover);
+}
+
+.avri-history-row:active {
+  transform: scale(0.996);
+}
+
+.avri-row-actions {
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-standard);
+}
+
+.avri-history-row:hover .avri-row-actions,
+.avri-history-row:focus-within .avri-row-actions {
+  opacity: 1;
+}
+
+.avri-field {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+  transition:
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard);
+}
+
+.avri-field::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.avri-field:focus {
+  background-color: var(--color-surface-raised);
+  box-shadow:
+    inset 0 0 0 1px var(--color-focus-ring),
+    0 0 0 3px var(--color-focus-soft);
+}
+
+.avri-settings-divider {
+  height: 1px;
+  background-color: var(--color-hairline);
+}
+
+.avri-primary-button,
+.avri-secondary-button,
+.avri-danger-button {
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    background-color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard),
+    transform var(--motion-standard) var(--ease-standard),
+    opacity var(--motion-standard) var(--ease-standard);
+}
+
+.avri-primary-button {
+  color: var(--color-accent-foreground);
+  background-color: var(--color-accent);
+  box-shadow: var(--shadow-accent);
+}
+
+.avri-primary-button:hover {
+  background-color: var(--color-accent-hover);
+  box-shadow: var(--shadow-accent-hover);
+}
+
+.avri-secondary-button {
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.avri-secondary-button:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+.avri-danger-button {
+  color: var(--color-danger);
+  background-color: var(--color-danger-muted);
+}
+
+.avri-danger-button:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
+
+.avri-primary-button:active,
+.avri-secondary-button:active,
+.avri-danger-button:active {
+  transform: scale(0.975);
+}
+
+.avri-status-success {
+  color: var(--color-success);
+}
+
+.avri-status-error {
+  color: var(--color-danger);
+}
+
+.avri-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: var(--color-text-tertiary);
+  box-shadow: 0 0 0 3px var(--color-control-hover);
+}
+
+.avri-spin {
+  animation: avri-spin 800ms linear infinite;
+}
+
+@media (max-width: 760px) {
+  .avri-row-actions {
+    opacity: 1;
+  }
+}
+
+@keyframes avri-page-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes avri-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes avri-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes avri-memory-details-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes avri-memory-check {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes avri-memory-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.992);
+  }
+}
+
+@keyframes avri-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes avri-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

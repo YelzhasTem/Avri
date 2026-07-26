@@ -1,0 +1,33 @@
+export type { MemoryRepository } from './MemoryRepository'
+export {
+  buildMemoryContext,
+  detectSecrets,
+  isDuplicateMemory,
+  normalizeMemoryTerms,
+  redactSecrets,
+  sanitizeMemoryKeywords,
+  scoreMemoryRelevance,
+  selectRelevantMemories,
+  validateExtractionResult,
+  validateMemoryDraft,
+} from './MemoryService'
+export {
+  MEMORY_CATEGORIES,
+  MEMORY_CONFIDENCE_LEVELS,
+  MEMORY_IMPORTANCE_LEVELS,
+  MEMORY_STATUSES,
+  type MemoryCategory,
+  type MemoryConfidence,
+  type MemoryContextResult,
+  type MemoryEntity,
+  type MemoryExtractionResult,
+  type MemoryImportance,
+  type MemoryListQuery,
+  type MemoryProposalEvent,
+  type MemoryProposalInput,
+  type MemoryStatus,
+  type MemoryValidationResult,
+  type SecretDetectionResult,
+  type SecretKind,
+  type UpdateMemoryInput,
+} from './types'
