@@ -4,6 +4,12 @@
 
 <br>
 
+<a href="https://github.com/YelzhasTem/Avri/releases/latest"><img src="https://img.shields.io/badge/Download-macOS_·_Windows_·_Linux-7C8CFF?style=for-the-badge" alt="Download Avri for macOS, Windows or Linux"></a>
+
+<br><br>
+
+<a href="https://github.com/YelzhasTem/Avri/actions/workflows/ci.yml"><img src="https://github.com/YelzhasTem/Avri/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+
 <img src="https://img.shields.io/badge/Electron-47848F?style=flat-square&logo=electron&logoColor=white" alt="Electron">
 <img src="https://img.shields.io/badge/React_19-149ECA?style=flat-square&logo=react&logoColor=white" alt="React 19">
 <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
@@ -13,6 +19,7 @@
 <img src="https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white" alt="Vitest">
 
 <p>
+  <a href="#download">Download</a> ·
   <a href="#features">Features</a> ·
   <a href="#how-memory-works">Memory</a> ·
   <a href="#architecture">Architecture</a> ·
@@ -24,6 +31,19 @@
 ## About
 
 **Avri** is a personal AI assistant that lives on your desktop. It streams answers from Google Gemini, keeps your chats on your own computer and can remember useful facts about you, but only the ones you approve.
+
+## Download
+
+Get the latest installer from **[Releases](https://github.com/YelzhasTem/Avri/releases/latest)**.
+
+| System | File | First launch |
+| --- | --- | --- |
+| macOS (Apple silicon) | `Avri-…-mac-arm64.dmg` | The app is not signed yet. Drag Avri to Applications, then right-click it → **Open** → **Open**. If macOS still blocks it: System Settings → Privacy & Security → **Open Anyway** |
+| macOS (Intel) | `Avri-…-mac-x64.dmg` | Same as above |
+| Windows 10/11 | `Avri-…-win-x64.exe` | SmartScreen may warn about an unknown publisher: **More info** → **Run anyway** |
+| Linux | `Avri-…-linux-x86_64.AppImage` | Run `chmod +x Avri-*.AppImage`, then open it |
+
+On first launch Avri asks for a Gemini API key. [Creating one](https://aistudio.google.com/apikey) is free; paste it in **Settings**.
 
 ## Features
 
@@ -76,6 +96,22 @@ Follows your system theme or stays in the theme you choose.
 </td>
 </tr>
 </tbody>
+<tbody>
+<tr valign="top">
+<td>
+
+### Readable answers
+Replies render as Markdown: headings, lists, tables and code blocks with a one-click **Copy** button. Links open in your browser, never inside the app.
+
+</td>
+<td>
+
+### Guided first run
+Without a key, Avri explains what it needs and links straight to a free Gemini key instead of failing on the first message.
+
+</td>
+</tr>
+</tbody>
 </table>
 
 ## How memory works
@@ -115,12 +151,16 @@ The renderer runs with context isolation on and Node integration off. It has no 
 | --- | --- |
 | `src/services/ai` | Provider contract, shared models and errors, Gemini implementation |
 | `src/services/memory` | Provider-independent memory policy, validation and retrieval |
+| `src/services/markdown` | Markdown parser for replies: raw HTML stays text, only http(s) links survive |
+| `src/services/links.ts` | Which links may leave the app and open in the system browser |
 | `src/hooks` | Streaming and local chat state for React |
 | `src/components` | Chat, history, memory and settings views |
 | `electron/main` | Gemini requests, cancellation, retries, credentials, IPC handlers |
 | `electron/main/storage` | Replaceable local repositories for chats and settings |
 | `electron/main/memory` | Memory persistence and non-blocking extraction |
 | `electron/preload` | The bridge exposed to the renderer |
+| `electron-builder.yml`, `resources/` | Installer configuration and app icons |
+| `.github/workflows` | CI on every pull request; installers and a GitHub release for every `v*` tag |
 
 ## Getting started
 
@@ -139,7 +179,20 @@ You can also skip the `.env` file and paste a key in **Settings** → **Test con
 | `npm run dev` | Run the app with hot reload |
 | `npm run build` | Type check and build |
 | `npm run preview` | Run the production build |
-| `npm test` | Memory test suite: secret detection, proposal validation, relevance scoring, lifecycle, corrupted-store recovery, context limits |
+| `npm test` | Unit tests: memory policy and storage, Markdown parser, link safety, API key status |
+| `npm run dist` | Build an installer for the current system into `release/` |
+| `npm run dist:mac` · `dist:win` · `dist:linux` | Build for a specific system |
+
+### Releasing
+
+Bump `version` in `package.json`, then push a matching tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions builds the macOS, Windows and Linux installers and publishes them as a GitHub release.
 
 ---
 

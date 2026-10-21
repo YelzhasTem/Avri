@@ -1,0 +1,50 @@
+appId: com.yelzhastem.avri
+productName: Avri
+copyright: Copyright © 2026 Yelzhas
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
+directories:
+  buildResources: resources
+  output: release
+
+# Only the compiled app ships. Production dependencies are added by
+# electron-builder; local .env files and API keys never are.
+files:
+  - out/**/*
+  - package.json
+  - '!**/.env'
+  - '!**/.env.*'
+
+npmRebuild: false
+asar: true
+
+mac:
+  category: public.app-category.productivity
+  icon: resources/icon.icns
+  identity: null
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+
+dmg:
+  title: ${productName} ${version}
+
+win:
+  icon: resources/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: Avri
+
+linux:
+  icon: resources/icon.png
+  category: Utility
+  synopsis: Desktop AI companion with opt-in long-term memory
+  target:
+    - target: AppImage
+      arch: [x64]

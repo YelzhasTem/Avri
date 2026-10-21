@@ -7,7 +7,6 @@ import {
   Settings,
   SquarePen,
   Sun,
-  UserRound,
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChatView } from './components/ChatView'
@@ -22,7 +21,11 @@ import {
   type ChatMessage,
 } from './services/ai'
 import type { ChatConversation } from './services/chat'
-import type { AISettingsSummary } from './services/settings'
+import {
+  getApiKeyStatus,
+  type AISettingsSummary,
+  type ApiKeyStatus,
+} from './services/settings'
 import { type ThemePreference, useTheme } from './theme'
 
 type AppView = 'chat' | 'history' | 'memory' | 'settings'
@@ -71,6 +74,7 @@ export default function App() {
   const [defaultModel, setDefaultModel] = useState<string>(
     DEFAULT_GEMINI_MODEL,
   )
+  const [apiKeyStatus, setApiKeyStatus] = useState<ApiKeyStatus>('checking')
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const themeMenuRef = useRef<HTMLDivElement>(null)
   const themeTriggerRef = useRef<HTMLButtonElement>(null)
@@ -97,9 +101,16 @@ export default function App() {
   }, [activeChat])
 
   useEffect(() => {
-    void window.avri.settings.get().then((settings) => {
-      setDefaultModel(settings.model)
-    })
+    void window.avri.settings
+      .get()
+      .then((settings) => {
+        setDefaultModel(settings.model)
+        setApiKeyStatus(getApiKeyStatus(settings))
+      })
+      .catch(() => {
+        // Let the request itself report a configuration problem.
+        setApiKeyStatus('ready')
+      })
   }, [])
 
   useEffect(() => {
@@ -177,7 +188,7 @@ export default function App() {
 
   const sendMessage = useCallback(async () => {
     const content = input.trim()
-    if (!content || isGenerating) {
+    if (!content || isGenerating || apiKeyStatus === 'missing') {
       return
     }
 
@@ -251,6 +262,7 @@ export default function App() {
       setChatError('Avri could not save this message locally.')
     }
   }, [
+    apiKeyStatus,
     createChat,
     defaultModel,
     input,
@@ -299,6 +311,7 @@ export default function App() {
 
   const handleSettingsChange = useCallback((settings: AISettingsSummary) => {
     setDefaultModel(settings.model)
+    setApiKeyStatus(getApiKeyStatus(settings))
   }, [])
 
   const selectTheme = (
@@ -444,14 +457,6 @@ export default function App() {
                 </div>
               )}
             </div>
-            <button
-              type="button"
-              aria-label="Open profile"
-              title="Profile"
-              className={`${controlClassName} avri-profile`}
-            >
-              <UserRound size={16} strokeWidth={1.7} aria-hidden="true" />
-            </button>
           </div>
         </header>
 
@@ -465,6 +470,8 @@ export default function App() {
             memoryProposals={memory.memories.filter(
               (item) => item.sourceChatId === activeChat?.id,
             )}
+            needsApiKey={apiKeyStatus === 'missing'}
+            onOpenSettings={() => setView('settings')}
             onInputChange={setInput}
             onSend={() => void sendMessage()}
             onStop={cancel}

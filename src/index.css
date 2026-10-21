@@ -111,11 +111,15 @@ body {
   transition: background-color var(--motion-standard) var(--ease-standard);
 }
 
-button,
-textarea,
-input,
-select {
-  font: inherit;
+/* Kept in the base layer so Tailwind text-* and font-* utilities on
+   controls are not overridden by this reset. */
+@layer base {
+  button,
+  textarea,
+  input,
+  select {
+    font: inherit;
+  }
 }
 
 button {
@@ -765,4 +769,204 @@ button:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Links and notices */
+
+.avri-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--motion-standard) var(--ease-standard);
+}
+
+.avri-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.avri-notice {
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+  animation: avri-enter var(--motion-enter) var(--ease-enter) both;
+}
+
+/* Markdown in assistant replies */
+
+.avri-md {
+  overflow-wrap: anywhere;
+}
+
+.avri-md > * + *,
+.avri-md li > * + * {
+  margin-top: 0.85em;
+}
+
+.avri-md h1,
+.avri-md h2,
+.avri-md h3,
+.avri-md h4,
+.avri-md h5,
+.avri-md h6 {
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.avri-md > h1:not(:first-child),
+.avri-md > h2:not(:first-child),
+.avri-md > h3:not(:first-child) {
+  margin-top: 1.4em;
+}
+
+.avri-md h1 {
+  font-size: 1.36em;
+}
+
+.avri-md h2 {
+  font-size: 1.2em;
+}
+
+.avri-md h3 {
+  font-size: 1.07em;
+}
+
+.avri-md h4,
+.avri-md h5,
+.avri-md h6 {
+  font-size: 1em;
+}
+
+.avri-md strong {
+  font-weight: 600;
+}
+
+.avri-md ul,
+.avri-md ol {
+  padding-left: 1.45em;
+}
+
+.avri-md ul {
+  list-style: disc;
+}
+
+.avri-md ol {
+  list-style: decimal;
+}
+
+.avri-md ul ul {
+  list-style: circle;
+}
+
+.avri-md li + li {
+  margin-top: 0.3em;
+}
+
+.avri-md li::marker {
+  color: var(--color-text-tertiary);
+}
+
+.avri-md a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  text-underline-offset: 2px;
+}
+
+.avri-md a:hover {
+  text-decoration-color: currentColor;
+}
+
+.avri-md code {
+  padding: 0.12em 0.38em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.88em;
+  background-color: var(--color-surface);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--color-hairline);
+}
+
+.avri-md blockquote {
+  padding-left: 14px;
+  color: var(--color-text-secondary);
+  border-left: 3px solid var(--color-border);
+}
+
+.avri-md hr {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.avri-md-code {
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.avri-md-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 6px 5px 14px;
+  font-size: 11.5px;
+  color: var(--color-text-tertiary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.avri-md-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: 7px;
+  transition:
+    color var(--motion-standard) var(--ease-standard),
+    background-color var(--motion-standard) var(--ease-standard);
+}
+
+.avri-md-copy:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-control-hover);
+}
+
+.avri-md-code pre {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.avri-md-code pre code {
+  padding: 0;
+  font-size: inherit;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.avri-md-table {
+  overflow-x: auto;
+}
+
+.avri-md table {
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.avri-md th,
+.avri-md td {
+  padding: 6px 12px;
+  text-align: left;
+  border: 1px solid var(--color-border);
+}
+
+.avri-md th {
+  font-weight: 600;
+  background-color: var(--color-surface);
 }

@@ -1,10 +1,13 @@
+import { ExternalLink, KeyRound } from 'lucide-react'
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import type { ChatMessage } from '../services/ai'
+import { GEMINI_API_KEY_URL } from '../services/links'
 import type { MemoryEntity, UpdateMemoryInput } from '../services/memory'
 import {
   MemoryProposalCard,
   type MemoryProposalDisplayState,
 } from './MemoryProposalCard'
+import { Markdown } from './Markdown'
 import { PromptComposer } from './PromptComposer'
 
 interface ChatViewProps {
@@ -14,6 +17,8 @@ interface ChatViewProps {
   isGenerating: boolean
   isWaitingForFirstToken: boolean
   memoryProposals: MemoryEntity[]
+  needsApiKey: boolean
+  onOpenSettings(): void
   onInputChange(value: string): void
   onSend(): void
   onStop(): void
@@ -29,6 +34,8 @@ export function ChatView({
   isGenerating,
   isWaitingForFirstToken,
   memoryProposals,
+  needsApiKey,
+  onOpenSettings,
   onInputChange,
   onSend,
   onStop,
@@ -105,14 +112,50 @@ export function ChatView({
     <main className="flex min-h-0 flex-1 flex-col">
       {visibleMessages.length === 0 && !isGenerating ? (
         <section className="flex min-h-[210px] flex-1 items-center justify-center overflow-y-auto px-6 pb-10 pt-20 max-[760px]:pb-8 max-[760px]:pt-14">
-          <div className="avri-enter max-w-xl text-center">
-            <h2 className="text-[31px] font-[550] leading-tight tracking-[-0.036em] max-[760px]:text-[28px]">
-              Hi, I&apos;m Avri.
-            </h2>
-            <p className="avri-secondary mt-3.5 text-[16.5px] font-[400] tracking-[-0.015em] max-[760px]:text-[15px]">
-              What can I help with today?
-            </p>
-          </div>
+          {needsApiKey ? (
+            <div className="avri-enter max-w-md text-center">
+              <div
+                aria-hidden="true"
+                className="avri-logo mx-auto mb-5 flex size-11 items-center justify-center rounded-[14px]"
+              >
+                <KeyRound size={18} strokeWidth={1.8} />
+              </div>
+              <h2 className="text-[26px] font-[550] leading-tight tracking-[-0.03em] max-[760px]:text-[23px]">
+                Connect Gemini to start
+              </h2>
+              <p className="avri-secondary mt-3 text-[14.5px] leading-6">
+                Avri talks to Google Gemini with your own API key. Creating one
+                is free, and Avri stores it encrypted on this computer.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                <button
+                  type="button"
+                  className="avri-primary-button rounded-[11px] px-4 py-2.5 text-[13px] font-[550]"
+                  onClick={onOpenSettings}
+                >
+                  Open Settings
+                </button>
+                <a
+                  href={GEMINI_API_KEY_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="avri-secondary-button inline-flex items-center gap-1.5 rounded-[11px] px-4 py-2.5 text-[13px] font-[550]"
+                >
+                  Get a free key
+                  <ExternalLink size={13} strokeWidth={1.8} aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="avri-enter max-w-xl text-center">
+              <h2 className="text-[31px] font-[550] leading-tight tracking-[-0.036em] max-[760px]:text-[28px]">
+                Hi, I&apos;m Avri.
+              </h2>
+              <p className="avri-secondary mt-3.5 text-[16.5px] font-[400] tracking-[-0.015em] max-[760px]:text-[15px]">
+                What can I help with today?
+              </p>
+            </div>
+          )}
         </section>
       ) : (
         <section
@@ -126,7 +169,11 @@ export function ChatView({
                   data-role={message.role}
                   className="avri-message avri-enter text-[14.5px] leading-7"
                 >
-                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                  {message.role === 'assistant' ? (
+                    <Markdown content={message.content} />
+                  ) : (
+                    <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                  )}
                 </article>
                 {message.role === 'assistant' &&
                   displayedProposals
@@ -163,6 +210,16 @@ export function ChatView({
         </section>
       )}
 
+      {needsApiKey && visibleMessages.length > 0 && (
+        <div className="avri-notice mx-auto mb-3 w-[calc(100%-64px)] max-w-[760px] rounded-[12px] px-3.5 py-2.5 text-[12.5px] max-[760px]:w-[calc(100%-40px)]">
+          Add a Gemini API key in{' '}
+          <button type="button" className="avri-link" onClick={onOpenSettings}>
+            Settings
+          </button>{' '}
+          to continue this conversation.
+        </div>
+      )}
+
       {error && (
         <div className="avri-error mx-auto mb-3 w-[calc(100%-64px)] max-w-[760px] rounded-[12px] px-3.5 py-2.5 text-[12.5px] max-[760px]:w-[calc(100%-40px)]">
           {error}
@@ -172,6 +229,10 @@ export function ChatView({
       <PromptComposer
         value={input}
         isGenerating={isGenerating}
+        canSend={!needsApiKey}
+        placeholder={
+          needsApiKey ? 'Add a Gemini API key in Settings to start…' : undefined
+        }
         onChange={onInputChange}
         onSend={onSend}
         onStop={onStop}
