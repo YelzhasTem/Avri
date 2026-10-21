@@ -4,6 +4,7 @@ import {
   GEMINI_MODELS,
   type ConnectionStatus,
 } from '../services/ai'
+import { GEMINI_API_KEY_URL } from '../services/links'
 import type { AISettingsSummary } from '../services/settings'
 
 interface SettingsViewProps {
@@ -125,7 +126,16 @@ export function SettingsView({ onSettingsChange }: SettingsViewProps) {
                 Gemini API Key
               </label>
               <p className="avri-secondary mb-2.5 mt-1 text-[11.5px] leading-5">
-                A saved key takes priority over the development environment key.
+                Stored encrypted on this computer and used only for requests to
+                Gemini.{' '}
+                <a
+                  href={GEMINI_API_KEY_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="avri-link"
+                >
+                  Get a free key in Google AI Studio
+                </a>
               </p>
               <input
                 id="gemini-api-key"

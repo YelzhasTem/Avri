@@ -1,7 +1,8 @@
 import { join } from 'node:path'
 import { config as loadEnvironment } from 'dotenv'
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, shell } from 'electron'
 import { GeminiProvider } from '../../src/services/ai/GeminiProvider'
+import { isAppNavigation, isSafeExternalUrl } from '../../src/services/links'
 import { AIService } from './AIService'
 import { registerIpcHandlers } from './ipc'
 import { LocalMemoryRepository } from './memory/LocalMemoryRepository'
@@ -49,6 +50,26 @@ function createWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
     },
+  })
+
+  // Links from replies and settings open in the system browser; the app
+  // window itself never navigates away from Avri.
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (isSafeExternalUrl(url)) {
+      void shell.openExternal(url)
+    }
+    return { action: 'deny' }
+  })
+
+  mainWindow.webContents.on('will-navigate', (event) => {
+    if (isAppNavigation(mainWindow.webContents.getURL(), event.url)) {
+      return
+    }
+
+    event.preventDefault()
+    if (isSafeExternalUrl(event.url)) {
+      void shell.openExternal(event.url)
+    }
   })
 
   const rendererUrl = process.env.ELECTRON_RENDERER_URL

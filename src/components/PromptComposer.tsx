@@ -1,20 +1,21 @@
-import { ArrowUp, Mic, Paperclip, Square } from 'lucide-react'
+import { ArrowUp, Square } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 interface PromptComposerProps {
   value: string
   isGenerating: boolean
+  canSend?: boolean
+  placeholder?: string
   onChange(value: string): void
   onSend(): void
   onStop(): void
 }
 
-const controlClassName =
-  'avri-control inline-flex size-[34px] shrink-0 items-center justify-center rounded-[11px] focus-visible:outline-none'
-
 export function PromptComposer({
   value,
   isGenerating,
+  canSend = true,
+  placeholder = 'Ask Avri anything...',
   onChange,
   onSend,
   onStop,
@@ -33,42 +34,24 @@ export function PromptComposer({
 
   return (
     <div className="shrink-0 px-8 pb-7 max-[760px]:px-5 max-[760px]:pb-5">
-      <div className="avri-prompt mx-auto flex w-full max-w-[760px] items-end gap-2 rounded-[18px] p-2.5">
-        <button
-          type="button"
-          aria-label="Attach a file"
-          title="Attach"
-          disabled
-          className={controlClassName}
-        >
-          <Paperclip size={16.5} strokeWidth={1.7} aria-hidden="true" />
-        </button>
-
+      <div className="avri-prompt mx-auto flex w-full max-w-[760px] items-end gap-2 rounded-[18px] p-2.5 pl-3">
         <textarea
           ref={textareaRef}
           rows={1}
           value={value}
           aria-label="Message Avri"
-          placeholder="Ask Avri anything..."
+          placeholder={placeholder}
           className="avri-textarea min-h-10 min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1.5 py-2 text-[14.5px] leading-6 outline-none"
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
               event.preventDefault()
-              onSend()
+              if (canSend) {
+                onSend()
+              }
             }
           }}
         />
-
-        <button
-          type="button"
-          aria-label="Use microphone"
-          title="Microphone"
-          disabled
-          className={controlClassName}
-        >
-          <Mic size={16.5} strokeWidth={1.7} aria-hidden="true" />
-        </button>
 
         {isGenerating ? (
           <button
@@ -85,7 +68,7 @@ export function PromptComposer({
             type="button"
             aria-label="Send message"
             title="Send"
-            disabled={!value.trim()}
+            disabled={!canSend || !value.trim()}
             className="avri-send inline-flex size-[38px] shrink-0 items-center justify-center rounded-[13px] focus-visible:outline-none"
             onClick={onSend}
           >
@@ -96,4 +79,3 @@ export function PromptComposer({
     </div>
   )
 }
-
