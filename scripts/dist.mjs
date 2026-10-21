@@ -5,16 +5,23 @@
 //   node scripts/dist.mjs win      Windows NSIS installer
 //   node scripts/dist.mjs linux    Linux AppImage
 //
-// The two macOS dmgs are built one after the other: built in parallel they
-// mount volumes with the same name and break each other.
+// The two macOS dmgs are built one after the other, each with its own volume
+// name: built together, or with a leftover mounted volume of the same name,
+// hdiutil breaks one of them.
 import { execSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 
 const ELECTRON_BUILDER = 'npx --yes electron-builder@26.0.12'
 const CURRENT = { darwin: 'mac', win32: 'win', linux: 'linux' }[process.platform]
 const platform = process.argv[2] ?? CURRENT
+const { productName = 'Avri', version } = JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+)
+
+const macBuild = (arch) => `--mac --${arch} "-c.dmg.title=${productName} ${version} ${arch}"`
 
 const runs = {
-  mac: ['--mac --arm64', '--mac --x64'],
+  mac: [macBuild('arm64'), macBuild('x64')],
   win: ['--win'],
   linux: ['--linux'],
 }[platform]

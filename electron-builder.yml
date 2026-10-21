@@ -18,16 +18,14 @@ files:
 npmRebuild: false
 asar: true
 
+# Architectures come from scripts/dist.mjs (--arm64, then --x64), so the two
+# dmgs are never built at the same time.
 mac:
   category: public.app-category.productivity
   icon: resources/icon.icns
   identity: null
   target:
     - target: dmg
-      arch: [arm64, x64]
-
-dmg:
-  title: ${productName} ${version}
 
 win:
   icon: resources/icon.ico
