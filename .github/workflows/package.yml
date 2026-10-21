@@ -16,13 +16,13 @@ jobs:
         include:
           - name: macOS
             os: macos-latest
-            target: --mac
+            platform: mac
           - name: Windows
             os: windows-latest
-            target: --win
+            platform: win
           - name: Linux
             os: ubuntu-latest
-            target: --linux
+            platform: linux
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -36,24 +36,33 @@ jobs:
 
       - run: npm run build
 
+      # Spotlight indexing keeps freshly built disk images busy, which makes
+      # hdiutil fail to detach them on hosted macOS runners.
+      - name: Turn off Spotlight indexing
+        if: runner.os == 'macOS'
+        run: sudo mdutil -a -i off || true
+
       - name: Build installer
-        run: npx --yes electron-builder@26.0.12 ${{ matrix.target }} --publish never
+        run: node scripts/dist.mjs ${{ matrix.platform }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
       - name: Check that no .env file is packaged
         shell: bash
         run: |
-          archive="$(find release -name app.asar -print -quit)"
-          if [ -z "$archive" ]; then
+          found=0
+          while IFS= read -r archive; do
+            if npx --yes @electron/asar@3 list "$archive" | grep -Ei '(^|[/\\])\.env'; then
+              echo "::error::A .env file was packaged into $archive"
+              found=1
+            fi
+          done < <(find release -name app.asar)
+          if [ -z "$(find release -name app.asar -print -quit)" ]; then
             echo "::error::app.asar not found"
             exit 1
           fi
-          if npx --yes @electron/asar@3 list "$archive" | grep -Ei '(^|[/\\])\.env'; then
-            echo "::error::A .env file was packaged into the app"
-            exit 1
-          fi
-          echo "No .env file inside $archive"
+          [ "$found" = 0 ] && echo "No .env file in any packaged app"
+          exit "$found"
 
       - uses: actions/upload-artifact@v4
         with:
