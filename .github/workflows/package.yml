@@ -1,0 +1,66 @@
+name: Package
+
+# Builds installers for macOS, Windows and Linux. Called by CI and Release.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Package (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            target: --mac
+          - name: Windows
+            os: windows-latest
+            target: --win
+          - name: Linux
+            os: ubuntu-latest
+            target: --linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Build installer
+        run: npx --yes electron-builder@26.0.12 ${{ matrix.target }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Check that no .env file is packaged
+        shell: bash
+        run: |
+          archive="$(find release -name app.asar -print -quit)"
+          if [ -z "$archive" ]; then
+            echo "::error::app.asar not found"
+            exit 1
+          fi
+          if npx --yes @electron/asar@3 list "$archive" | grep -Ei '(^|[/\\])\.env'; then
+            echo "::error::A .env file was packaged into the app"
+            exit 1
+          fi
+          echo "No .env file inside $archive"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Avri-${{ matrix.name }}
+          path: |
+            release/*.dmg
+            release/*.exe
+            release/*.AppImage
+          if-no-files-found: error
+          retention-days: 14
