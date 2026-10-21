@@ -111,11 +111,15 @@ body {
   transition: background-color var(--motion-standard) var(--ease-standard);
 }
 
-button,
-textarea,
-input,
-select {
-  font: inherit;
+/* Kept in the base layer so Tailwind text-* and font-* utilities on
+   controls are not overridden by this reset. */
+@layer base {
+  button,
+  textarea,
+  input,
+  select {
+    font: inherit;
+  }
 }
 
 button {
