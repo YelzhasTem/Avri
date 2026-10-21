@@ -1,25 +1,47 @@
 name: Release
 
+# Two ways to release the version in package.json:
+#   - Actions → Release → Run workflow (creates the v* tag for you), or
+#   - push a matching tag: git tag v0.1.0 && git push origin v0.1.0
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   version:
     name: Check version
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
-      - name: Tag must match package.json
+
+      - name: Work out the release tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           expected="v$(node -p "require('./package.json').version")"
-          if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+
+          if [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF_NAME" != "$expected" ]; then
             echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $expected"
             exit 1
           fi
+
+          if gh release view "$expected" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::Release $expected already exists. Bump the version in package.json first."
+            exit 1
+          fi
+
+          echo "tag=$expected" >> "$GITHUB_OUTPUT"
 
   package:
     name: Installers
@@ -28,7 +50,7 @@ jobs:
 
   release:
     name: Publish GitHub release
-    needs: package
+    needs: [version, package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -39,8 +61,10 @@ jobs:
       - name: Create release with installers
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
         run: |
-          gh release create "$GITHUB_REF_NAME" installers/* \
+          gh release create "$TAG" installers/* \
             --repo "$GITHUB_REPOSITORY" \
-            --title "Avri $GITHUB_REF_NAME" \
+            --target "$GITHUB_SHA" \
+            --title "Avri $TAG" \
             --generate-notes

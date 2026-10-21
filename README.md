@@ -185,12 +185,10 @@ You can also skip the `.env` file and paste a key in **Settings** → **Test con
 
 ### Releasing
 
-Bump `version` in `package.json`, then push a matching tag:
+1. Bump `version` in `package.json` and merge it into `main`.
+2. Open **Actions → Release → Run workflow** on `main`. It creates the `v<version>` tag for you.
 
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
+Pushing a matching tag works too: `git tag v0.1.0 && git push origin v0.1.0`.
 
 GitHub Actions builds the macOS, Windows and Linux installers and publishes them as a GitHub release.
 
